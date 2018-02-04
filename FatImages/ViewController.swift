@@ -40,16 +40,27 @@ class ViewController: UIViewController {
     // the UI.
     // This si for instructional purposes only, never do this.
     @IBAction func synchronousDownload(_ sender: UIBarButtonItem) {
-        let url = URL(string: BigImages.seaLion.rawValue)
-        let imageData = try? Data(contentsOf: url!)
-        let image = UIImage(data: imageData!)
-        photoView.image = image
+        if let url = URL(string: BigImages.seaLion.rawValue),
+            let imageData = try? Data(contentsOf: url),
+            let image = UIImage(data: imageData) {
+            photoView.image = image
+        }
     }
     
     // This method avoids blocking by creating a new queue that runs
     // in the background, without blocking the UI.
     @IBAction func simpleAsynchronousDownload(_ sender: UIBarButtonItem) {
-
+        let url = URL(string: BigImages.whale.rawValue)
+        let download = DispatchQueue(label: "dowloand")
+        download.async {
+            _ in
+            let imgData = try? Data(contentsOf: url!)
+            let image = UIImage(data: imgData!)
+            DispatchQueue.main.async {
+                _ in
+                self.photoView.image = image
+            }
+        }
     }
     
     // This code downloads the huge image in a global queue and uses a completion
